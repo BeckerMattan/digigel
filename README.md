@@ -24,10 +24,16 @@
 > No need to install Python or dependencies!
 
 ---
-
+ 
 ### 🐍 Option 2: Run from Source (Developers)
 
 1. Clone this repository:
    ```bash
    git clone https://github.com/BeckerMattan/digigel.git
    cd digigel
+
+
+
+## 📄 License
+This software is licensed under the [CC BY-NC-ND 4.0 License](https://creativecommons.org/licenses/by-nc-nd/4.0/).  
+For academic and non-commercial use only. Contact Beckerm@post.bgu.ac.il for licensing.
