@@ -1,0 +1,11 @@
+PyQt5>=5.15
+qdarkstyle
+matplotlib
+numpy
+pandas
+openpyxl
+scipy
+ruptures
+scikit-learn
+yaml
+hyperspy
