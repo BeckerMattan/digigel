@@ -1,20 +1,13 @@
-"""Istall dependencies:
-pip install altgraph==0.17.4 appdirs==1.4.4 astropy==7.0.1 astropy-iers-data==0.2025.2.17.0.34.13 asttokens==2.4.1 atomicwrites==1.4.0 cachetools==5.5.1 certifi==2024.8.30 charset-normalizer==3.4.0 click==8.1.7 cloudpickle==3.1.0 colorama==0.4.6 comm==0.2.2 contourpy==1.3.0 cx_Freeze==7.2.10 cx_Logging==3.2.1 cycler==0.12.1 dask==2024.10.0 decorator==5.1.1 docstring-to-markdown==0.15 et_xmlfile==2.0.0 executing==2.1.0 flexcache==0.3 flexparser==0.3.1 fonttools==4.54.1 fsspec==2024.10.0 h5py==3.12.1 hyperspy==2.2.0 hyperspy_gui_ipywidgets==2.0.3 idna==3.10 imageio==2.36.0 importlib_metadata==8.5.0 ipympl==0.9.4 ipython==8.29.0 ipython-genutils==0.2.0 ipywidgets==8.1.5 isort==6.0.0 jedi==0.19.1 Jinja2==3.1.4 joblib==1.4.2 jsonpointer==2.1 jupyterlab_widgets==3.0.13 kiwisolver==1.4.7 lazy_loader==0.4 lief==0.16.3 link_traits==1.0.3 llvmlite==0.44.0 locket==1.0.0 MarkupSafe==3.0.2 matplotlib==3.10.0 matplotlib-inline==0.1.7 mpmath==1.3.0 natsort==8.4.0 networkx==3.4.2 Nuitka==2.6.6 numba==0.61.0 numexpr==2.10.2 numpy==2.1.3 openpyxl==3.1.5 ordered-set==4.1.0 packaging==24.1 pandas==2.2.3 parso==0.8.4 partd==1.4.2 pefile==2023.2.7 pillow==11.1.0 Pint==0.24.3 platformdirs==4.3.6 pluggy==1.5.0 pooch==1.8.2 prettytable==3.11.0 prompt_toolkit==3.0.48 protobuf==3.20.3 pure_eval==0.2.3 py2exe==0.13.0.2 pyasn1==0.4.8 pyasn1-modules==0.2.8 pyerfa==2.0.1.5 Pygments==2.18.0 pyinstaller==6.12.0 pyinstaller-hooks-contrib==2025.1 pyls-spyder==0.4.0 pyparsing==3.2.0 PyQt5==5.15.11 pyqt5-plugins==5.15.9.2.3 PyQt5-Qt5==5.15.2 PyQt5-stubs==5.15.6.0 pyqt5-tools==5.15.9.3.3 PyQt5_sip==12.17.0 PyQtWebEngine==5.15.6 PyQtWebEngine-Qt5==5.15.2 python-box==7.2.0 python-dateutil==2.9.0.post0 python-dotenv==1.0.1 python-lsp-jsonrpc==1.1.2 python-lsp-server==1.12.2 pytz==2025.1 pywin32-ctypes==0.2.3 PyYAML==6.0.2 QDarkStyle==3.2.3 qt5-applications==5.15.2.2.3 qt5-tools==5.15.2.1.3 QtAwesome==1.3.1 QtPy==2.4.1 requests==2.32.3 rosettasciio==0.6 ruptures==1.1.9 scikit-image==0.24.0 scikit-learn==1.6.1 scipy==1.15.2 seaborn==0.13.2 shiboken6==6.8.0 six==1.16.0 stack-data==0.6.3 sympy==1.13.3 tbb==2022.0.0 tcmlib==1.2.0 threadpoolctl==3.5.0 tifffile==2024.9.20 toolz==1.0.0 tqdm==4.66.6 traitlets==5.14.3 traits==6.4.3 traits-stubs==6.4.0 typing_extensions==4.12.2 tzdata==2025.1 ujson==5.10.0 urllib3==2.2.3 wcwidth==0.2.13 widgetsnbextension==4.0.13 zipp==3.20.2 zstandard==0.23.0
-"""
-
 import sys
-from idlelib.configdialog import is_int
 
 from PyQt5 import QtWidgets
-
 from PyQt5 import uic
 from PyQt5.QtWidgets import (
     QShortcut, QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QWidget,
     QSlider, QCheckBox, QListWidget, QLineEdit, QFileDialog, QSpinBox, QMessageBox, QComboBox, QDoubleSpinBox,
     QGridLayout, QRadioButton, QMessageBox, QSizePolicy, QDesktopWidget, QStyleFactory
 )
-
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, QSize
 from PyQt5.QtGui import QIcon, QKeyEvent, QFont, QMovie
 from PyQt5.QtGui import QPalette, QColor
 
@@ -24,12 +17,12 @@ import random
 import re
 import matplotlib
 from matplotlib.font_manager import fontManager
+from traits.trait_types import false
 
-# matplotlib.use("Qt5Agg")  # Force Matplotlib to use PyQt5
-matplotlib.use('TkAgg')  # or 'Qt5Agg', 'WXAgg', etc.
+matplotlib.use("Qt5Agg")  # Force Matplotlib to use PyQt5
+#matplotlib.use('TkAgg')  # or 'Qt5Agg', 'WXAgg', etc.
 
 import matplotlib.pyplot as plt  # Explicit import of matplotlib
-from astropy.extern.configobj.validate import is_list
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from form import Ui_MainWindow
@@ -46,7 +39,6 @@ import hyperspy.api as hs  # Ensure Hyperspy is installed
 hyperspy_path = os.path.dirname(hs.__file__)
 os.environ["HYPERSPY_EXTENSIONS_PATH"] = os.path.join(hyperspy_path, "extensions")
 
-from traits.traits_listener import is_none
 import ruptures as rpt
 from scipy.ndimage import gaussian_filter1d
 from scipy.optimize import fsolve
@@ -59,9 +51,13 @@ import pickle
 from concurrent.futures import ThreadPoolExecutor
 import time
 from sklearn.cluster import KMeans
+#from sklearn.decomposition import PCA
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
+
+#from tslearn.clustering import TimeSeriesKMeans
+
 
 
 
@@ -92,22 +88,6 @@ def get_even_column_extrema(matrix_grid):
 
     all_values = np.concatenate(even_columns_values)
     return np.max(all_values), np.min(all_values)
-
-
-def setup_loading_gif(self, gif_path='loading.gif'):
-    self.loading_movie = QMovie(gif_path)
-    self.loading_label.setMovie(self.loading_movie)
-    self.loading_label.setAlignment(Qt.AlignCenter)
-    self.loading_label.setVisible(False)  # hidden by default
-
-def show_loading(self):
-    self.loading_label.setVisible(True)
-    self.loading_movie.start()
-
-def hide_loading(self):
-    self.loading_movie.stop()
-    self.loading_label.setVisible(False)
-
 
 def apply_dark_mode_to_canvas(canvas):
     """Apply dark mode styling to a Matplotlib canvas."""
@@ -285,12 +265,12 @@ def adapt_to_controller_settle_time(matrix:np.ndarray, time = 0):
     matrix = \
         matrix[rows_to_remove:, :]
     return matrix
-
+"""
 def convert_to_serializable_non_recursive(root):
-    """
-    Iteratively converts NumPy arrays, NumPy scalars, ranges, and None values
-    (as well as nested dicts and lists) to JSON-compatible formats.
-    """
+    
+    #Iteratively converts NumPy arrays, NumPy scalars, ranges, and None values
+    #(as well as nested dicts and lists) to JSON-compatible formats.
+    
 
     def basic_conversion(x):
         if isinstance(x, np.ndarray):
@@ -347,6 +327,7 @@ def convert_to_serializable_non_recursive(root):
             stack.append((value, conv_value, iter(enumerate(value)), 'list'))
 
     return converted_root
+"""
 
 def handle_design_upon_startup(self):
     self.setStyleSheet("""
@@ -526,9 +507,9 @@ def save_experiment_params_pickle(self, folder_path, filename="experiment_params
         pickle.dump(params, f, protocol=pickle.HIGHEST_PROTOCOL)
     print(f"Parameters saved (Pickle) to: {filepath}")
 
-
+"""
 def save_experiment_params(self, folder_path, filename="experiment_params.json"):
-    """Saves experiment parameters as a JSON file (excluding PyQt objects)."""
+    #Saves experiment parameters as a JSON file (excluding PyQt objects).
     params = {
         "curr_force_sep_data": self.curr_force_sep_data,
         "d0": self.d0,
@@ -671,7 +652,7 @@ def save_experiment_params(self, folder_path, filename="experiment_params.json")
     with open(filepath, "w") as f:
         json.dump(params_serializable, f, indent=4)
     print(f"Parameters saved to: {filepath}")
-
+"""
 
 def select_double_columns(matrix: np.ndarray, indices: np.ndarray) -> np.ndarray:
     """
@@ -960,6 +941,16 @@ def Normalize_norm_2d_list(input_list, force_value):
         matrix[:, 2 * i] = time
     return matrix
 
+def Normalize_x_val_2d_forcetime_list(input_list):
+    matrix = np.array(input_list)
+
+    for i in range(int(0.5 * matrix.shape[1])):
+        time = matrix[:, 2 * i]
+        time = time[~np.isnan(time)]
+        time = time - time[0]
+        matrix[:, 2 * i] = time
+    return matrix
+
 
 def Normalize_force_2d_list(input_list):
     matrix = np.array(input_list)
@@ -1030,9 +1021,52 @@ def new_calculate_cluster_graph(data):
         kmeans = KMeans(n_clusters=k, random_state=0).fit(data)
         sse.append(kmeans.inertia_)
     return k_range, sse
+"""
+def new_calculate_cluster_graph_pca(data):
+    # Step 1: Reduce dimensionality
+    # n_components=0.99 means "keep enough components to explain 99% of the variance"
+    # This usually reduces 1000 points down to ~5-10 meaningful features.
+    pca = PCA(n_components=0.99)
+    data_pca = pca.fit_transform(data)
 
+    # Optional: Print how many components it kept
+    print(f"PCA reduced data from {data.shape[1]} time points to {data_pca.shape[1]} components.")
 
-def calculate_cluster_number(matrix: np.ndarray, matplotlib_element_for_elbow: QtWidgets.QWidget):
+    sse = []
+    k_range = range(1, 11)
+
+    # Step 2: Run K-Means on the REDUCED data
+    for k in k_range:
+        kmeans = KMeans(n_clusters=k, random_state=0).fit(data_pca)
+        sse.append(kmeans.inertia_)
+
+    return k_range, sse
+"""
+"""
+def new_calculate_cluster_graph_ts(data):
+    costs = []
+    k_range = range(1, 11)
+
+    for k in k_range:
+        # Optimization 1: n_jobs=-1 uses all available CPU cores
+        # Optimization 2: global_constraint="sakoe_chiba" limits the DTW search window
+        # Optimization 3: sakoe_chiba_radius defines the window size (e.g., 10% of length)
+        model = TimeSeriesKMeans(
+            n_clusters=k,
+            metric="dtw",
+            n_init=2,
+            max_iter=50,
+            random_state=0,
+            n_jobs=-1,
+            metric_params={"global_constraint": "sakoe_chiba", "sakoe_chiba_radius": 3}
+        )
+        model.fit(data)
+        costs.append(model.inertia_)
+
+    return k_range, costs
+"""
+
+def calculate_cluster_number(matrix: np.ndarray, matplotlib_element_for_elbow: QtWidgets.QWidget, is_forcetime: bool = False):
     # matrix = matrix.T
     sep_columns = matrix[:, 0::2]
 
@@ -1056,10 +1090,10 @@ def calculate_cluster_number(matrix: np.ndarray, matplotlib_element_for_elbow: Q
     # n_clusters = force_signal.learning_results.estimated_number_of_clusters
     cluster_numbers, cluster_metrics = new_calculate_cluster_graph(force_columns)
     n_clusters = local_claculate_cluster_number(cluster_numbers, cluster_metrics)
-    if not is_int(n_clusters):
-        if (is_none(n_clusters)):
+    if not isinstance(n_clusters, int):
+        if (n_clusters is None):
             n_clusters = 3
-        elif (is_list(n_clusters)):
+        elif (isinstance(n_clusters, list)):
             n_clusters = n_clusters[-1]
         else:
             n = 3
@@ -1069,7 +1103,7 @@ def calculate_cluster_number(matrix: np.ndarray, matplotlib_element_for_elbow: Q
 
 
 def local_claculate_cluster_number(cluster_numbers, cluster_metrics):
-    slopes = np.diff(cluster_metrics) / np.diff(cluster_numbers)
+    slopes = np.diff(cluster_metrics)
     steepest_index = np.argmin(slopes)
     k = cluster_numbers[steepest_index + 1]
     best_k = max(min(cluster_numbers), min(k, max(cluster_numbers)))
@@ -1088,18 +1122,19 @@ def plot_elbow_in_ai_viewing_graph(self, force_columns):
     screen = QApplication.primaryScreen()
     screen_size = screen.size()
     height = screen_size.height()
-    font_size = int((18 / 1440) * height)
+    font_size = int((16 / 1440) * height)
     title_size = int((32 / 1440) * height)
     cluster_numbers, cluster_metrics = new_calculate_cluster_graph(force_columns)
+
     # cluster_metrics = force_signal.learning_results.cluster_metric_data  # List of cluster numbers
     # cluster_numbers = np.array(force_signal.learning_results.cluster_metric_index)  # Corresponding metric values
 
     # Step 3: Plot the elbow graph on the AI_Viewing_Graph canvas
     self.AI_Viewing_Graph.ax.clear()  # Clear previous plots
     self.AI_Viewing_Graph.ax.plot(cluster_numbers, cluster_metrics, marker="o", linestyle="None", markersize=15)
-    self.AI_Viewing_Graph.ax.set_title("Elbow Method for Optimal Clusters", fontsize=title_size)
-    self.AI_Viewing_Graph.ax.set_xlabel("Number of Clusters", fontsize=font_size)
-    self.AI_Viewing_Graph.ax.set_ylabel("Cluster Metric", fontsize=font_size)
+    self.AI_Viewing_Graph.ax.set_title("Elbow Method for\nOptimal Group Number", fontsize=title_size)
+    self.AI_Viewing_Graph.ax.set_xlabel("Number of Groups", fontsize=font_size)
+    self.AI_Viewing_Graph.ax.set_ylabel("Deviation Metric (WCSS)", fontsize=font_size)
     self.AI_Viewing_Graph.ax.grid(True)
     self.AI_Viewing_Graph.fig.tight_layout()
 
@@ -1160,6 +1195,8 @@ def plot_graph_in_find_d0_graph(self):
     force = force[~np.isnan(force)]
     sep = self.curr_force_sep_data[:, i * 2]
     sep = sep[~np.isnan(sep)]
+    if len(ipt_values)==0:
+        ipt_values=[0]
     ipt = int(ipt_values[i])
     d0 = d0_values[i]
     length_unit_text = self.R_power_name
@@ -1327,15 +1364,16 @@ def plot_graph_in_analysis_graph(self):
             x = np.array(x)
             y = np.array(y)
             error = np.array(error)
-            self.Analysis_graph.ax.plot(x, y, marker="o", linestyle="None", linewidth=3, label=labeltext)
+            #self.Analysis_graph.ax.plot(x, y, marker="o", linestyle="None", linewidth=2, label=labeltext)
+            self.Analysis_graph.ax.plot(x, y, linewidth=2, label=labeltext)
             self.Analysis_graph.ax.fill_between(x, y - error, y + error, alpha=0.2)
     if check_type == 3:
         y1 = self.variance_poro_vector
         x1 = range(len(self.variance_poro_vector))
         y2 = self.variance_visco_vector
         x2 = range(len(self.variance_visco_vector))
-        self.Analysis_graph.ax.plot(x1, y1, marker="o", linestyle="None", linewidth=3, label="Poro Test")
-        self.Analysis_graph.ax.plot(x2, y2, marker="o", linestyle="None", linewidth=3, label="Visco Test")
+        self.Analysis_graph.ax.plot(x1, y1, linewidth=2, label="Poro Test")
+        self.Analysis_graph.ax.plot(x2, y2, linewidth=2, label="Visco Test")
     elif check_type == 4:
         y = self.d0_averages_final
         x = self.forcevalues_arr
@@ -1376,7 +1414,7 @@ def plot_graph_in_analysis_graph(self):
 
 
     elif check_type == 4:
-        self.Analysis_graph.ax.set_title("Strength analysis - " + self.experiment_name, fontsize=title_size)
+        self.Analysis_graph.ax.set_title("Stiffness analysis - " + self.experiment_name, fontsize=title_size)
         self.Analysis_graph.ax.set_xlabel("Indentation Force [N]", fontsize=font_size)
         self.Analysis_graph.ax.set_ylabel("Indentation Depth [m]", fontsize=font_size)
         self.Analysis_graph.ax.legend(loc="upper right", fontsize=font_size)
@@ -1476,6 +1514,7 @@ def plot_graph_in_fit_graph(self):
 
 def cluster_traces(n_clusters: int, force_signal: hs.signals.Signal1D):
     # Clustering
+    #force_signal.decomposition(algorithm="SVD") #<-- PCA application
     force_signal.cluster_analysis(cluster_source="signal", n_clusters=n_clusters, preprocessing="norm",
                                   algorithm="kmeans", n_init=8)
 
@@ -1491,6 +1530,27 @@ def cluster_traces(n_clusters: int, force_signal: hs.signals.Signal1D):
     # save_matrix_as_csv(force_columns.tolist(), "force_columns.csv")
     # return sep_columns, force_columns
     return cluster_labels
+
+
+"""
+def cluster_traces_ts(n_clusters: int, force_signal):
+
+    data = force_signal.data
+
+    model = TimeSeriesKMeans(n_clusters=n_clusters,metric="dtw",n_init=2,max_iter=50,random_state=0)
+
+    raw_labels = model.fit_predict(data)
+
+    cluster_labels = np.zeros((n_clusters, len(raw_labels)), dtype=bool)
+    for cluster_id in range(n_clusters):
+        cluster_labels[cluster_id] = (raw_labels == cluster_id)
+
+    for cluster_id in range(n_clusters):
+        true_indices = np.where(cluster_labels[cluster_id] == True)[0].tolist()
+        print(f"In cluster {cluster_id}, graphs {true_indices} belong to the cluster.")
+
+    return cluster_labels
+"""
 
 
 def get_true_indices_vector(cluster_labels, cluster_id):
@@ -1652,6 +1712,14 @@ def poro_sphere(x, D_p):
 def poro_cone(x, D_p):
     return 0.493 * np.exp(-0.822 * np.sqrt(D_p * x)) + 0.507 * np.exp(-1.348 * D_p * x)
 
+def change_window_size_image_export(self,width, height):
+    # Resize to nominal size
+    nominal_size = QSize(width, height)
+    self.resize(nominal_size)
+
+def restore_window_size(self):
+    self.resize(self.original_size)
+
 
 class MatplotlibCanvas(FigureCanvas):
     def __init__(self, parent=None):
@@ -1707,14 +1775,16 @@ class MatplotlibCanvas(FigureCanvas):
         self.draw()"""
 
 
+
+
 class FindD0App(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        #uic.loadUi('form.ui', self)
+        #uic.loadUi('form2.ui', self)
         self.setupUi(self)
         self.setStyleSheet("""
             QWidget {
-                font-family: 'Segoe UI';
+                font-family: 'Segoe UI', 'Arial', sans-serif;
             }
         """)
         self.base_width = 500
@@ -1734,6 +1804,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         self.all_a_vectors = []
         self.d0_default = None
         self.all_ipts = []
+        #print("Assigned self.all_ipts at 1736:", self.all_ipts, type(self.all_ipts))
         self.def_all_ipts = []
         self.all_ipt_vectors = []
         self.all_d0_vectors_merged = []
@@ -1867,6 +1938,8 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         self.max_sep_val = 0
         self.min_sep_val = 0
         self.settle_time_sec = 0
+        self.original_size = self.size()
+        self.camefromtab2 = False
 
         self.force_curve_list = self.findChild(QListWidget, 'force_curve_list')
         self.force_curve_list_2 = self.findChild(QListWidget, 'force_curve_list_2')
@@ -1946,7 +2019,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         self.save_fit_values_button = self.findChild(QPushButton, 'save_fit_values_button')
         self.start_over_button = self.findChild(QPushButton, 'start_over_button')
         self.manual_filtering_button = self.findChild(QPushButton, 'manual_filtering_button')
-        self.back_to_filter_button = self.findChild(QPushButton, 'back_to_filter_button')
+        self.remove_current_trace_d0_button = self.findChild(QPushButton, 'remove_current_trace_d0_button')
         self.force_combobox_4 = self.findChild(QComboBox, 'force_combobox_4')
         self.label_20 = self.findChild(QLabel, 'label_20')
         # self.calc_contact_button = self.findChild(QPushButton, 'calc_contact_button')
@@ -1959,6 +2032,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         self.fit_for_current_force_label = self.findChild(QLabel, 'fit_for_current_force_label')
         self.fit_for_all_force_label = self.findChild(QLabel, 'fit_for_all_force_label')
         self.settle_time_spinbox = self.findChild(QDoubleSpinBox, 'settle_time_spinbox')
+        self.save_clusters_csv_button = self.findChild(QPushButton, 'save_clusters_csv_button')
 
         self.load_ForceSep_csv_button.clicked.connect(self.load_new_forcesep_csv)
         self.load_ForceTime_csv_button.clicked.connect(self.load_new_forcetime_csv)
@@ -2008,10 +2082,11 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         self.save_fit_values_button.clicked.connect(self.save_fit_values_button_clicked)
         self.start_over_button.clicked.connect(self.start_over_button_clicked)
         self.manual_filtering_button.clicked.connect(self.manual_filtering_button_clicked)
-        self.back_to_filter_button.clicked.connect(self.back_to_filter_button_clicked)
+        self.remove_current_trace_d0_button.clicked.connect(self.remove_current_trace_d0_button_clicked)
         #        self.calc_contact_button.clicked.connect(self.calc_contact_button_clicked)
         #        self.contact_model_combobox.currentIndexChanged.connect(self.contact_model_combobox_changed)
         self.light_dark_mode_button.clicked.connect(self.light_dark_mode_button_clicked)
+        self.save_clusters_csv_button.clicked.connect(self.save_clusters_csv_button_clicked)
         self.fit_for_current_force_label.setVisible(False)
         self.fit_for_all_force_label.setVisible(False)
         self.current_parameter_label_1.setVisible(False)
@@ -2073,7 +2148,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
-
+        print(f"{self.width()}, {self.height()}")
         # Calculate how much bigger or smaller the window is compared to the base width
         scale_factor = self.width() / self.base_width
 
@@ -2243,8 +2318,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
 
                 msg.exec_()
                 return
-            self.all_force_sep_matrices_before_filter[self.curr_force_i][self.curr_sample_i] = process_2d_list(
-                currentlist)
+            self.all_force_sep_matrices_before_filter[self.curr_force_i][self.curr_sample_i]  = process_2d_list(currentlist)
             # self.all_force_sep_matrices_before_filter[self.curr_force_i][self.curr_sample_i] = fill_empty_space_2D_list(self.all_force_sep_matrices_before_filter[self.curr_force_i][self.curr_sample_i], find_maximum_length_column(self.all_force_sep_matrices_before_filter[self.curr_force_i][self.curr_sample_i]))
             self.force_sep_uploaded_flag = True
             self.current_force_sep_CSV_length = current_length
@@ -2388,9 +2462,9 @@ class FindD0App(QMainWindow, Ui_MainWindow):
 
                 msg.exec_()
                 return
+            currentlist_to_normalize_x_vals = process_2d_list(currentlist)
+            self.all_force_time_matrices_before_filter[self.curr_force_i][self.curr_sample_i] = Normalize_x_val_2d_forcetime_list(currentlist_to_normalize_x_vals)
 
-            self.all_force_time_matrices_before_filter[self.curr_force_i][self.curr_sample_i] = process_2d_list(
-                currentlist)
             matrix = adapt_to_controller_settle_time(self.all_force_time_matrices_before_filter[self.curr_force_i][self.curr_sample_i], self.settle_time_sec)
             self.all_force_time_matrices_before_filter[self.curr_force_i][self.curr_sample_i] = matrix
             """self.all_force_time_matrices_before_filter[self.curr_force_i][self.curr_sample_i] = fill_empty_space_2D_list(
@@ -2439,6 +2513,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         traces = self.curr_force_sep_data.shape[1] // 2
         self.d0 = np.zeros(traces)
         self.all_ipts = np.zeros(traces)
+        #print("Assigned self.all_ipts at 2442:", self.all_ipts, type(self.all_ipts))
         self.def_all_ipts = np.zeros(traces)
 
         for i in range(traces):
@@ -2447,6 +2522,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
             sep = self.curr_force_sep_data[:, i * 2]
             sep = sep[~np.isnan(sep)]
             ipt = find_ipt(self, force)
+
 
             d0 = (sep[ipt] - sep[-1])
 
@@ -2493,6 +2569,8 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         sep = sep[~np.isnan(sep)]
         self.d0_slider.setMinimum(1)  # Set the minimum value of the slider
         self.d0_slider.setMaximum(len(sep))  # Set the maximum value of the slider
+        if len(self.all_ipts)==0:
+            self.all_ipts = [0]
         if not isinstance(self.all_ipts, int):
             ipt = int(self.all_ipts[i])
             self.d0_slider.setValue(len(sep) - ipt)  # Set the value of the slider
@@ -2516,7 +2594,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         self.all_index_vectors_after_filtering = [[0 for i in range(self.duplicatenum)] for j in range(self.forcenum)]
         self.all_d0_vectors = [[0 for i in range(self.duplicatenum)] for j in range(self.forcenum)]
         self.all_a_vectors = [[0 for i in range(self.duplicatenum)] for j in range(self.forcenum)]
-        self.all_ipt_vectors = [[0 for i in range(self.duplicatenum)] for j in range(self.forcenum)]
+        self.all_ipt_vectors = [[[0] for i in range(self.duplicatenum)] for j in range(self.forcenum)]
         self.d0_averages_divided = [[0 for i in range(self.duplicatenum)] for j in range(self.forcenum)]
         self.all_headers_vectors_before_filter = [[[] for i in range(self.duplicatenum)] for j in range(self.forcenum)]
         self.all_headers_vectors_taken_out = [[[] for i in range(self.duplicatenum)] for j in range(self.forcenum)]
@@ -2676,10 +2754,13 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         i = self.force_curve_list.currentRow()
         sep = self.curr_force_sep_data[:, i * 2]
         sep = sep[~np.isnan(sep)]
-        if not value == 1:
+        if not (value <= 1 or value >= len(sep)):
             ipt = len(sep) - value
+            print("all_ipts:", self.all_ipts, type(self.all_ipts))
             self.all_ipts[i] = ipt
         else:
+            if self.all_ipts[i]==0:
+                self.all_ipts[i]=1
             ipt = int(self.all_ipts[i])
         d0 = (sep[ipt] - sep[-1])
         self.d0[i] = d0
@@ -2803,6 +2884,9 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         self.curr_force_i = self.force_combobox_2.currentIndex()
         self.curr_sample_i = self.sample_combobox_2.currentIndex()
         self.all_ipts = self.all_ipt_vectors[self.curr_force_i][self.curr_sample_i]
+        if isinstance(self.all_ipts, int):
+            self.all_ipts = [0]
+        #print("Assigned self.all_ipts at 2808:", self.all_ipts, type(self.all_ipts))
         current_indices = self.all_index_vectors_after_filtering[self.curr_force_i][self.curr_sample_i]
         self.traceNames = [f"Trace {i+1}" for i in current_indices]
         self.force_curve_list.clear()
@@ -2815,6 +2899,9 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         self.curr_force_i = self.force_combobox_2.currentIndex()
         self.curr_sample_i = self.sample_combobox_2.currentIndex()
         self.all_ipts = self.all_ipt_vectors[self.curr_force_i][self.curr_sample_i]
+        if isinstance(self.all_ipts, int):
+            self.all_ipts = [0]
+        #print("Assigned self.all_ipts at 2821:", self.all_ipts, type(self.all_ipts))
         current_indices = self.all_index_vectors_after_filtering[self.curr_force_i][self.curr_sample_i]
         if not isinstance(current_indices, int):
             self.traceNames = [f"Trace {i+1}" for i in current_indices]
@@ -2891,9 +2978,9 @@ class FindD0App(QMainWindow, Ui_MainWindow):
             self.show_histogram_button.setEnabled(True)
             self.Lowest_button.setEnabled(True)
             self.Highest_button.setEnabled(True)
+            self.remove_current_trace_d0_button.setEnabled(True)
             self.force_curve_list.setCurrentRow(-1)
             self.show_histogram_button_clicked()
-
 
     def manual_filtering_button_clicked(self):
         self.start_over_AI_button.setText("Restart filtering")
@@ -2959,12 +3046,12 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         if (self.force_sep_UL_radio_button.isChecked()):
             current_np_matrix = self.current_force_sep_matrix
             self.n_clusters, self.current_sep_columns, self.current_force_columns = calculate_cluster_number(
-                np.array(current_np_matrix), self.AI_Viewing_Graph)
+                np.array(current_np_matrix), self.AI_Viewing_Graph, False)
             current_indices = self.all_force_sep_AI_indices[self.curr_force_i][self.curr_sample_i]
         elif (self.force_time_UL_radio_button.isChecked()):
             current_np_matrix = self.current_force_time_matrix
             self.n_clusters, self.current_sep_columns, self.current_force_columns = calculate_cluster_number(
-                np.array(current_np_matrix), self.AI_Viewing_Graph)
+                np.array(current_np_matrix), self.AI_Viewing_Graph, True)
             current_indices = self.all_force_time_AI_indices[self.curr_force_i][self.curr_sample_i]
         else:
             return
@@ -3000,6 +3087,8 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         self.manual_filtering_button.setEnabled(False)
         self.force_sep_UL_radio_button.setEnabled(False)
         self.force_time_UL_radio_button.setEnabled(False)
+        self.save_clusters_csv_button.setEnabled(True)
+
         if (self.force_sep_UL_radio_button.isChecked()):
             if self.manual_filtering_flag:
                 self.all_force_sep_AI_indices[self.curr_force_i][self.curr_sample_i] = np.array(
@@ -3032,7 +3121,8 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         # for label in self.current_index_vector:
         # self.graphTraceAIComboBox.addItem(str(label+1))
         self.erase_trace_button.setEnabled(True)
-        self.erase_cluster_button.setEnabled(True)
+        if not self.manual_filtering_flag:
+            self.erase_cluster_button.setEnabled(True)
         self.start_over_AI_button.setEnabled(True)
         self.filtering_accepted_button.setEnabled(True)
 
@@ -3123,6 +3213,53 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         else:
             return
 
+    def remove_current_trace_d0_button_clicked(self):
+        current_indices = self.all_force_sep_AI_indices[self.curr_force_i][self.curr_sample_i]
+        current_item = self.force_curve_list.currentItem()
+        if current_item is None:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Error")
+            msg.setInformativeText('No Trace Selected')
+            msg.setWindowTitle("Error")
+            font = QFont()
+            font.setPointSize(14)  # adjust as needed
+            msg.setFont(font)
+            msg.exec_()
+            return
+
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Question)
+        msg.setWindowTitle("Confirmation")
+        msg.setText("Delete single trace: Are you sure?")
+        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+        # Show the message box and get the response
+        font = QFont()
+        font.setPointSize(14)  # adjust as needed
+        msg.setFont(font)
+        response = msg.exec_()
+        if response == QMessageBox.Yes:
+            current_text = str(self.force_curve_list.currentItem().text())
+            if current_text.strip():  # Check if the text is not empty
+                current_trace_index = int(''.join(filter(str.isdigit, current_text))) - 1
+            self.all_headers_vectors_taken_out[self.curr_force_i][self.curr_sample_i].append(
+                self.all_headers_vectors_before_filter[self.curr_force_i][self.curr_sample_i][current_trace_index])
+            self.filtered_out_indices_reason[self.curr_force_i][self.curr_sample_i].append("Faulty indentation measurement - manually removed")
+            self.all_index_vectors_after_filtering[self.curr_force_i][self.curr_sample_i].remove(current_trace_index)
+            self.handle_data_after_single_remove_from_d0_panel()
+            current_indices = self.all_index_vectors_after_filtering[self.curr_force_i][self.curr_sample_i]
+            current_list_index = self.force_curve_list.currentRow()
+            self.all_ipts = np.delete(self.all_ipts, current_list_index)
+            self.d0 = np.delete(self.d0, current_list_index)
+            self.def_all_ipts = np.delete(self.def_all_ipts, current_list_index)
+            self.d0_default = np.delete(self.d0_default, current_list_index)
+
+            self.traceNames = [f"Trace {i + 1}" for i in current_indices]
+            self.force_curve_list.clear()
+            self.force_curve_list.addItems(self.traceNames)
+            plot_default_graph_in_find_d0_graph(self)
+
     def erase_cluster_button_clicked(self):
         if (self.force_sep_UL_radio_button.isChecked()):
             current_indices = self.all_force_sep_AI_indices[self.curr_force_i][self.curr_sample_i]
@@ -3139,7 +3276,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Question)
         msg.setWindowTitle("Confirmation")
-        msg.setText("Delete cluster: Are you sure?")
+        msg.setText("Delete group: Are you sure?")
         msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 
         # Show the message box and get the response
@@ -3155,10 +3292,10 @@ class FindD0App(QMainWindow, Ui_MainWindow):
                     self.all_headers_vectors_before_filter[self.curr_force_i][self.curr_sample_i][true_indices[k]])
                 if self.force_time_UL_radio_button.isChecked():
                     self.filtered_out_indices_reason[self.curr_force_i][self.curr_sample_i].append(
-                        "Faulty relaxation measurement - UL cluster removed")
+                        "Faulty relaxation measurement - UL group removed")
                 else:
                     self.filtered_out_indices_reason[self.curr_force_i][self.curr_sample_i].append(
-                        "Faulty indentation measurement - UL cluster removed")
+                        "Faulty indentation measurement - UL group removed")
             current_indices[current_cluster_index, :] = False
             if (self.force_sep_UL_radio_button.isChecked()):
                 self.all_force_sep_AI_indices[self.curr_force_i][self.curr_sample_i] = current_indices
@@ -3264,6 +3401,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
             self.erase_cluster_button.setEnabled(False)
             self.start_over_AI_button.setEnabled(False)
             self.filtering_accepted_button.setEnabled(False)
+            self.save_clusters_csv_button.setEnabled(False)
             self.clusterComboBox.clear()
             self.graphTraceAIComboBox.clear()
             for i in range(self.forcenum):
@@ -3330,7 +3468,6 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         for i in range(self.forcenum):
             for j in range(self.duplicatenum):
                 current_indices = self.all_index_vectors_after_filtering[i][j]
-                current_indices_2 = self.all_index_vectors_after_filtering[i][j]
                 while len(current_indices) > minimum_trace_number:
                     integer_to_delete = random.randint(0, (len(current_indices) - 1))
                     del current_indices[integer_to_delete]
@@ -3393,6 +3530,77 @@ class FindD0App(QMainWindow, Ui_MainWindow):
             msg_box.setText("xlsx saved successfully!")
             msg_box.setStandardButtons(QMessageBox.Ok)
             msg_box.exec_()  # Show the popup
+
+    def handle_data_after_single_remove_from_d0_panel(self):
+        self.final_trace_number = len(self.all_index_vectors_after_filtering[self.curr_force_i][self.curr_sample_i])
+        i = self.curr_force_i
+        j = self.curr_sample_i
+        for i in range(self.forcenum):
+            for j in range(self.duplicatenum):
+                current_indices = self.all_index_vectors_after_filtering[i][j]
+                while len(current_indices) > self.final_trace_number:
+                    integer_to_delete = random.randint(0, (len(current_indices) - 1))
+                    del current_indices[integer_to_delete]
+                    self.all_headers_vectors_taken_out[i][j].append(
+                        self.all_headers_vectors_before_filter[i][j][integer_to_delete])
+                    self.filtered_out_indices_reason[i][j].append("Randomly removed")
+                self.all_index_vectors_after_filtering[i][j] = current_indices
+        for i in range(self.forcenum):
+            for j in range(self.duplicatenum):
+                current_indices = np.array(self.all_index_vectors_after_filtering[i][j])
+                self.all_force_sep_matrices_after_filter[i][j] = select_double_columns(
+                    self.all_force_sep_matrices_before_filter[i][j], current_indices)
+                self.all_force_time_matrices_after_filter[i][j] = select_double_columns(
+                    self.all_force_time_matrices_before_filter[i][j], current_indices)
+        # if not self.debug:
+        if not self.debug:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Question)
+            msg.setWindowTitle("Save report?")
+            msg.setText("Do you want to save a filtering report?")
+            msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            font = QFont()
+            font.setPointSize(14)  # adjust as needed
+            msg.setFont(font)
+
+            # Show the message box and get the response
+            font = QFont()
+            font.setPointSize(14)  # adjust as needed
+            msg.setFont(font)
+            response = msg.exec_()
+        else:
+            response = QMessageBox.No
+        if response == QMessageBox.Yes:
+            save_xlsx_folder = QFileDialog.getExistingDirectory(self, "Select folder to save filtering report")
+            if not save_xlsx_folder:
+                return
+
+            filename = self.experiment_name + " filtering report.xlsx"
+            xls_file_full_path = save_xlsx_folder + "/" + filename
+            sheet_names = [["" for i in range(self.duplicatenum)] for j in range(self.forcenum)]
+
+            for i in range(self.forcenum):
+                for j in range(self.duplicatenum):
+                    name = str(round(self.forcevalues_arr[i] * 10 ** (-self.F_power),
+                                     2)) + " " + self.F_power_name + " sample #" + str(j + 1)
+                    sheet_name = name
+                    headers = ["Taken out:", "Reason:"]
+                    string_list_to_save = [list(pair) for pair in zip(self.all_headers_vectors_taken_out[i][j],
+                                                                      self.filtered_out_indices_reason[i][j])]
+                    if not string_list_to_save:
+                        string_list_to_save = [["No data taken out for this instance!", ""]]
+                    if i == 0 and j == 0:
+                        save_list_to_excel(string_list_to_save, save_xlsx_folder, filename, headers, sheet_name)
+                    else:
+                        add_sheet_to_existing_excel(xls_file_full_path, sheet_name, string_list_to_save, headers)
+
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Information)  # Options: Information, Warning, Critical, Question
+            msg_box.setWindowTitle("Confirmation")
+            msg_box.setText("xlsx saved successfully!")
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            msg_box.exec_()  # Show the popup
+
 
     def plot_on_ai_viewing_graph(self, x_data, y_data, title="Graph", xlabel="X-axis", ylabel="Y-axis"):
         """
@@ -3480,6 +3688,8 @@ class FindD0App(QMainWindow, Ui_MainWindow):
             self.show_histogram_button.setEnabled(False)
             self.Lowest_button.setEnabled(False)
             self.Highest_button.setEnabled(False)
+            self.remove_current_trace_d0_button.setEnabled(False)
+
 
         else:
             return
@@ -3708,7 +3918,6 @@ class FindD0App(QMainWindow, Ui_MainWindow):
                 self.Save_d0_button_clicked()
         self.debug = False
 
-
     def debug_button_clicked(self):
         self.debug = True
         self.enter_data_btn_pressed()
@@ -3726,9 +3935,10 @@ class FindD0App(QMainWindow, Ui_MainWindow):
             self.load_new_forcetime_csv()
             self.next_tab_0_button_pressed()
             self.debug_upload_csv_i += 1
-        self.debug = False
+        #self.debug = False
         #self.start_over_AI_button_clicked()
-        """for i in range(self.forcenum):
+        """
+        for i in range(self.forcenum):
             for j in range(self.duplicatenum):
                 self.curr_force_i = i
                 self.curr_sample_i = j
@@ -3743,9 +3953,10 @@ class FindD0App(QMainWindow, Ui_MainWindow):
                 self.force_time_UL_radio_button.setChecked(True)
                 self.elbow_check_clicked()
                 self.apply_clustreing_button_clicked()
-                self.filtering_accepted_button_clicked()"""
-        #self.skip_d0_button_clicked()
-        #self.FitTab.setCurrentIndex(4)
+                self.filtering_accepted_button_clicked()
+        self.skip_d0_button_clicked()
+        self.FitTab.setCurrentIndex(4)
+        """
 
     def indenter_type_combobox_changed(self):
         indenter_type_i = self.indenter_type_combobox.currentIndex()
@@ -3771,8 +3982,16 @@ class FindD0App(QMainWindow, Ui_MainWindow):
 
     def save_graphs_button_clicked(self):
         save_graphs_folder = QFileDialog.getExistingDirectory(self, "Select folder to save graphs")
+
+
+
         if save_graphs_folder:
+            self.original_size = self.size()
             for i in range(5):
+                if i == 0:
+                    change_window_size_image_export(self,569, 549)
+                else:
+                    change_window_size_image_export(self,338,527)
                 self.check_type_combobox.setCurrentIndex(i)
                 filename = self.experiment_name + " " + self.check_type_combobox.currentText()
                 save_graph_as_tiff(self, save_graphs_folder, filename)
@@ -3783,7 +4002,9 @@ class FindD0App(QMainWindow, Ui_MainWindow):
             msg_box.setStandardButtons(QMessageBox.Ok)
             msg_box.exec_()  # Show the popup
         else:
+            restore_window_size(self)
             return
+        restore_window_size(self)
 
     def save_experiment_button_clicked(self):
         if self.FitTab.currentIndex() == 0:
@@ -3824,6 +4045,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
                 self.all_a_vectors = params["all_a_vectors"]
                 self.d0_default = params["d0_default"]
                 self.all_ipts = params["all_ipts"]
+                #print("Assigned self.all_ipts at 3831:", self.all_ipts, type(self.all_ipts))
                 self.def_all_ipts = params["def_all_ipts"]
                 self.all_ipt_vectors = params["all_ipt_vectors"]
                 self.all_d0_vectors_merged = params["all_d0_vectors_merged"]
@@ -3954,6 +4176,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
                 if self.current_tab == 0:
                     return
                 elif self.current_tab > 0:
+                    self.max_sep_val, self.min_sep_val = get_even_column_extrema(self.all_force_sep_matrices_before_filter)
                     self.load_ForceSep_csv_button.setEnabled(False)
                     self.load_ForceTime_csv_button.setEnabled(False)
                     self.FitTab.setCurrentIndex(1)
@@ -3974,7 +4197,8 @@ class FindD0App(QMainWindow, Ui_MainWindow):
                         self.initialize_tab_2()
                         self.d0 = self.all_d0_vectors[self.curr_force_i][self.curr_sample_i]
                         self.all_ipts = self.all_ipt_vectors[self.curr_force_i][self.curr_sample_i]
-                        if not is_none(self.d0):
+                        #print("Assigned self.all_ipts at 3982:", self.all_ipts, type(self.all_ipts))
+                        if not self.d0 is None:
                             self.Save_d0_button.setEnabled(True)
 
                         if self.current_tab > 2:
@@ -4191,6 +4415,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
 
         self.fit_type = "poro"
         self.force_fit_combobox.setEnabled(True)
+        self.poro_fits_performed_already = False
         if not self.poro_fits_performed_already:
             self.poro_fits_performed_already = True
             self.r_squared_poro = 1
@@ -4252,10 +4477,15 @@ class FindD0App(QMainWindow, Ui_MainWindow):
                 self.D_p[i] = 0.5 * (params_UB[0] + params_LB[0])
                 self.D_p_std[i] = np.abs(0.5 * (params_UB[0] - params_LB[0]))
                 for j in range(self.final_trace_number * self.duplicatenum):
-                    currentvector = np.array(self.all_force_time_matrices_after_filter_merged[i])
+                    currentvector = np.array(self.norm_all_matrices[i])
                     currentvector = currentvector[:, 2 * j + 1]
                     F0 = currentvector[0]
-                    F_end = currentvector[-1]
+                    #calculate F_end from 5% percent of last values
+                    percent = 5
+                    n = max(1, int(len(currentvector) * percent / 100))  # make sure at least 1 element
+                    end_values = currentvector[-n:]
+                    F_end = np.mean(end_values)
+                    #F_end = currentvector[-1]
                     if self.conical_indenter:
                         self.all_G_values[i].append(
                             F0 / (4 * self.all_d0_vectors_merged[i][j] * self.all_a_vectors_merged[i][j]))
@@ -4266,6 +4496,8 @@ class FindD0App(QMainWindow, Ui_MainWindow):
                 self.G[i] = np.mean(self.all_G_values[i])
                 self.G_std[i] = np.std(self.all_G_values[i])
                 self.nu[i] = np.mean(self.all_nu_values[i])
+                #LookHere
+                #self.nu[i] = 1 - 0.5 * (self.norm_y_vectors_avg[i][0] / self.norm_y_vectors_avg[i][-1])
                 self.nu_std[i] = np.std(self.all_nu_values[i])
             self.D_p_tot = np.mean(self.D_p)
             self.D_p_std_tot = np.sqrt(np.sum((np.std(self.D_p_std) ** 2) / self.forcenum))
@@ -4307,6 +4539,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
 
         self.fit_type = "visco"
         self.force_fit_combobox.setEnabled(True)
+        self.visco_fits_performed_already = False
         if not self.visco_fits_performed_already:
             self.visco_fits_performed_already = True
             self.r_squared_visco = 1
@@ -4316,6 +4549,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
                 y_std = self.norm_y_vectors_std[i]
                 x_data = np.array(x, dtype=np.float64)
                 y_data = np.array(y, dtype=np.float64)
+                Y_DBG = y_data*10**9
                 #slope, intercept, r_value, _, _ = linregress(np.log(x_data[2:]), np.log(y_data[2:]))
                 #r_squared = r_value**2
                 #params_avg = [-slope, np.exp(intercept) * gamma(1 + slope)]
@@ -4369,7 +4603,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
             self.beta_std_tot = np.sqrt(np.sum((np.std(self.beta_std) ** 2) / self.forcenum))
             self.C_beta_tot = np.mean(self.C_beta)
             self.C_beta_std_tot = np.sqrt(np.sum((np.std(self.C_beta_std) ** 2) / self.forcenum))
-        self.parameter_label_1.setText("β = " + str(round(self.beta_tot, 3)) + " ± " + str(round(2*self.beta_std_tot, 3)))
+        self.parameter_label_1.setText("β = " + str(round(self.beta_tot, 5)) + " ± " + str(round(self.beta_std_tot, 5)))
         self.parameter_label_2.setText(
             "C<sub>β</sub> = " + str(round(self.C_beta_tot, 1)) + " ± " + str(round(self.C_beta_std_tot, 1)) + " Pa*s<sup>" + str(
                 round(self.beta_tot, 2))+"</sup>")
@@ -4795,11 +5029,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
         else:
             return
 
-    def back_to_filter_button_clicked(self):
-        self.FitTab.setCurrentIndex(1)  # Assuming the tab index is 2 for the "Find_D0_Tab"
-        self.FitTab.setTabEnabled(1, True)  # Assuming the tab index is 2 for the "Find_D0_Tab"
-        self.FitTab.setTabEnabled(2, False)  # Assuming the tab index is 2 for the "Find_D0_Tab"
-        self.current_tab = 1
+
 
     def calc_contact_button_clicked(self):
         current_E_star_vector = self.all_E_star_vectors_merged[self.curr_force_i]
@@ -4907,6 +5137,54 @@ class FindD0App(QMainWindow, Ui_MainWindow):
             apply_light_mode_to_canvas(self.fit_graph)
             self.light_dark_mode_button.setText("Dark\nMode")
             handle_design_upon_startup(self)
+
+
+    def save_clusters_csv_button_clicked(self):
+        """Save clusters csv button."""
+        save_csv_folder = QFileDialog.getExistingDirectory(self, "Select folder to save experiment parameters")
+        if not save_csv_folder:
+            return
+        current_text = str(self.graphTraceAIComboBox.currentText().strip())
+        if current_text.strip():  # Check if the text is not empty
+            current_trace_index = int(current_text.strip()) - 1
+        else:
+            return
+        current_cluster_index = self.clusterComboBox.currentIndex()
+        if (self.force_sep_UL_radio_button.isChecked()):
+            current_indices = self.all_force_sep_AI_indices[self.curr_force_i][self.curr_sample_i]
+        elif (self.force_time_UL_radio_button.isChecked()):
+            current_indices = self.all_force_time_AI_indices[self.curr_force_i][self.curr_sample_i]
+        else:
+            return
+        true_indices = get_true_indices_vector(current_indices, current_cluster_index)
+        #csv_file_full_path = save_csv_folder + "/" + filename
+        columns_to_save = [col for i in true_indices for col in (2*i, 2*i+1)]
+        matrix_to_save = self.all_force_sep_matrices_before_filter[self.curr_force_i][self.curr_sample_i][:,columns_to_save]
+        headers=[f"sample {self.curr_sample_i+1} trace #{x+1} {text}" for x in true_indices for text in ("Separation [m]", "Force [N]") ]
+
+        #header_list = self.all_headers_vectors_before_filter[self.curr_force_i][self.curr_sample_i]
+        #headers = [val for i in true_indices for val in (header_list[2*i], header_list[2*i + 1])]
+        sheetname = "Force vs. Sep, " + str(round(self.forcevalues_arr[self.curr_force_i] * 10 ** (-self.F_power), 2)) + " " + self.F_power_name + " sample #"+str(self.curr_sample_i)+" Cluster #"+str(current_cluster_index+1)
+        filename = self.experiment_name + " " + sheetname + ".csv"
+        save_ndarray_to_csv(matrix_to_save, save_csv_folder, filename, headers,
+                                sheetname)
+        matrix_to_save = self.all_force_time_matrices_before_filter[self.curr_force_i][self.curr_sample_i][:,columns_to_save]
+        headers=[f"sample {self.curr_sample_i+1} trace #{x+1} {text}" for x in true_indices for text in ("Time [s]", "Force [N]") ]
+        sheetname = "Force vs. Time, " + str(
+                round(self.forcevalues_arr[self.curr_force_i] * 10 ** (-self.F_power), 2)) + " " + self.F_power_name + " sample #"+str(self.curr_sample_i+1)+" Cluster #"+str(current_cluster_index+1)
+        filename = self.experiment_name + " " + sheetname + ".csv"
+        save_ndarray_to_csv(matrix_to_save, save_csv_folder, filename, headers,
+                                sheetname)
+
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Information)  # Options: Information, Warning, Critical, Question
+        msg_box.setWindowTitle("Confirmation")
+        msg_box.setText("cluster csv saved successfully!")
+        msg_box.setStandardButtons(QMessageBox.Ok)
+        msg_box.exec_()  # Show the popup
+
+
+
 
 
 
