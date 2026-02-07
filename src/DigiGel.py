@@ -3364,6 +3364,7 @@ class FindD0App(QMainWindow, Ui_MainWindow):
                 self.erase_cluster_button.setEnabled(False)
                 self.start_over_AI_button.setEnabled(False)
                 self.filtering_accepted_button.setEnabled(False)
+                self.filtering_accepted_button.setEnabled(False)
                 self.clusterComboBox.clear()
                 self.graphTraceAIComboBox.clear()
 
@@ -5199,4 +5200,5 @@ if __name__ == '__main__':
     handle_design_upon_startup(window)
 
     window.show()
+
     sys.exit(app.exec_())
